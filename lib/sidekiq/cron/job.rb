@@ -19,7 +19,7 @@ module Sidekiq
           status == "enabled" &&
             not_past_scheduled_time?(time) &&
             not_enqueued_after?(time) &&
-            conn.zadd(job_enqueued_key, formated_enqueue_time(time), formated_last_time(time))
+            conn.zadd(job_enqueued_key, time.to_f.to_s, formated_last_time(time))
         end
         enqueue
       end
@@ -441,10 +441,6 @@ module Sidekiq
       # time when last run should be performed
       def last_time now = Time.now
         Rufus::Scheduler::CronLine.new(@cron).previous_time(now)
-      end
-
-      def formated_enqueue_time now = Time.now
-        last_time(now).getutc.to_f.to_s
       end
 
       def formated_last_time now = Time.now
